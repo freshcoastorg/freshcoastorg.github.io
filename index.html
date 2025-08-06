@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh Coast - Data Stories</title>
+    <title>Fresh Coast</title>
     <style>
         * {
             margin: 0;
@@ -12,63 +12,71 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
+            line-height: 1.8;
+            color: #111;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
         }
         header {
-            padding: 40px 0;
-            border-bottom: 2px solid #eee;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
         }
         h1 {
             font-size: 2.5em;
-            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
-        .tagline {
+        .stories {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .story-link {
+            font-size: 1.1em;
+            color: #111;
+            text-decoration: none;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            transition: padding-left 0.2s;
+        }
+        .story-link:hover {
+            padding-left: 10px;
+        }
+        .story-date {
             color: #666;
-            font-size: 1.2em;
+            font-size: 0.9em;
+            margin-left: 12px;
         }
-        .story-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        .story-card {
-            border: 1px solid #ddd;
-            padding: 20px;
-            transition: transform 0.2s;
-        }
-        .story-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .coming-soon {
-            text-align: center;
-            padding: 60px 20px;
-            color: #888;
+        /* Remove this when you have real stories */
+        .placeholder {
+            color: #999;
+            font-style: italic;
+            padding: 40px 0;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Fresh Coast</h1>
-        <p class="tagline">Data-driven stories from the Great Lakes region</p>
     </header>
     
-    <main>
-        <div class="coming-soon">
-            <h2>Stories in Development</h2>
-            <p>Check back soon for interactive data journalism</p>
-        </div>
+    <div class="stories">
+        <!-- Your actual stories will look like this: -->
+        <!-- 
+        <a href="/stories/lake-levels-2024" class="story-link">
+            Rising Waters: 10 Years of Great Lakes Data
+            <span class="story-date">Nov 2024</span>
+        </a>
+        <a href="/stories/shipping-routes" class="story-link">
+            Cargo Patterns Through the Seaway
+            <span class="story-date">Oct 2024</span>
+        </a>
+        -->
         
-        <!-- Future story cards will go here -->
-        <div class="story-grid" style="display:none;">
-            <!-- We'll add story cards here as you create them -->
+        <!-- Remove this placeholder when you add real stories -->
+        <div class="placeholder">
+            First story coming soon
         </div>
-    </main>
+    </div>
 </body>
 </html>
