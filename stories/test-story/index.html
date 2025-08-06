@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Story - Fresh Coast</title>
+    <title>The Data Center Boom - Fresh Coast</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Crimson+Text:wght@400;600&display=swap');
         
@@ -29,6 +29,7 @@
             align-items: center;
             text-align: center;
             padding: 20px;
+            position: relative;
         }
         
         .story-header h1 {
@@ -42,7 +43,8 @@
         .story-header .subtitle {
             font-size: 1.3em;
             opacity: 0.8;
-            max-width: 600px;
+            max-width: 700px;
+            line-height: 1.6;
         }
         
         .scroll-indicator {
@@ -65,10 +67,10 @@
         }
         
         .story-section {
-            margin-bottom: 100vh; /* Creates scroll space */
+            margin-bottom: 80vh;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.6s, transform 0.6s;
+            transition: opacity 0.8s, transform 0.8s;
         }
         
         .story-section.visible {
@@ -80,6 +82,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 2.2em;
             margin-bottom: 30px;
+            color: #D4C4A0;
         }
         
         .story-section p {
@@ -87,28 +90,181 @@
             margin-bottom: 1.5em;
         }
         
-        /* Sticky visualization container */
+        .big-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            color: #E5D5B0;
+            display: block;
+            margin: 40px 0 20px 0;
+        }
+        
+        .source {
+            font-size: 0.9em;
+            opacity: 0.6;
+            font-style: italic;
+        }
+        
+        /* Data visualizations */
         .viz-container {
             position: sticky;
-            top: 20vh;
-            height: 60vh;
+            top: 10vh;
+            height: 80vh;
             margin: 100px auto;
             max-width: 900px;
+            padding: 20px;
+        }
+        
+        .viz-content {
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 50, 35, 0.3);
+            border: 1px solid rgba(212, 196, 160, 0.2);
+            border-radius: 4px;
+            padding: 40px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
         }
         
-        .viz-placeholder {
-            width: 100%;
-            height: 100%;
-            border: 2px solid rgba(212, 196, 160, 0.3);
+        /* Map styles */
+        #map-viz {
+            position: relative;
+        }
+        
+        .map-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #E5D5B0;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .map-point.planned {
+            background: transparent;
+            border: 2px solid #E5D5B0;
+        }
+        
+        .map-point:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+        
+        .map-label {
+            position: absolute;
+            font-size: 0.9em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            background: rgba(74, 93, 78, 0.9);
+            padding: 4px 8px;
+            border-radius: 3px;
+        }
+        
+        .map-point:hover + .map-label {
+            opacity: 1;
+        }
+        
+        /* Chart styles */
+        .bar-chart {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 300px;
+            margin: 40px 0;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #E5D5B0, rgba(229, 213, 176, 0.4));
+            margin: 0 10px;
+            position: relative;
+            transition: all 0.6s;
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: bottom;
+        }
+        
+        .bar.animate {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        /* Scenario toggle */
+        .scenario-toggle {
+            display: flex;
             justify-content: center;
-            font-size: 1.2em;
-            opacity: 0.6;
-            background: rgba(74, 93, 78, 0.5);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .scenario-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #D4C4A0;
+            color: #D4C4A0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        
+        .scenario-btn.active {
+            background: #D4C4A0;
+            color: #4A5D4E;
+        }
+        
+        /* Impact metrics */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .impact-item {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s;
+        }
+        
+        .impact-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .impact-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            color: #E5D5B0;
+            display: block;
+        }
+        
+        .impact-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 10px;
         }
         
         /* Back link */
@@ -126,43 +282,191 @@
         .back-home:hover {
             opacity: 1;
         }
+        
+        /* Pullquote */
+        .pullquote {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8em;
+            line-height: 1.4;
+            margin: 60px 0;
+            padding: 30px 0;
+            border-top: 1px solid rgba(212, 196, 160, 0.3);
+            border-bottom: 1px solid rgba(212, 196, 160, 0.3);
+            color: #E5D5B0;
+        }
     </style>
 </head>
 <body>
     <a href="/" class="back-home">← Fresh Coast</a>
     
     <header class="story-header">
-        <h1>Your First Data Story</h1>
-        <p class="subtitle">This is where your compelling subtitle goes, setting up the narrative journey ahead</p>
-        <div class="scroll-indicator">↓ Scroll to begin</div>
+        <h1>The Quiet Revolution</h1>
+        <p class="subtitle">How the Great Lakes region became America's unexpected data center hub—and what 50 billion gallons of water have to do with it</p>
+        <div class="scroll-indicator">↓</div>
     </header>
     
     <div class="story-content">
         <section class="story-section">
-            <h2>Setting the Scene</h2>
-            <p>This is where your story begins. As readers scroll, new sections fade in. You can write multiple paragraphs here to establish context.</p>
-            <p>The design maintains the Duck Green and aged paper aesthetic from your homepage, creating a cohesive experience.</p>
+            <h2>The New Gold Rush</h2>
+            <p>In 2019, the Great Lakes region hosted 12 major data centers. Today, that number has tripled. By 2027, it could reach 100.</p>
+            <p>The reason is simple: data centers need three things in abundance—power, land, and water. The Great Lakes region has all three, plus something else: a climate that provides free cooling for half the year.</p>
         </section>
         
+        <!-- Map Visualization -->
         <div class="viz-container">
-            <div class="viz-placeholder">
-                Data Visualization Will Go Here
+            <div class="viz-content" id="map-viz">
+                <h3 style="margin-bottom: 30px;">Data Centers: Built & Planned</h3>
+                <div style="position: relative; height: 400px; background: rgba(212, 196, 160, 0.05); border-radius: 4px;">
+                    <!-- Existing centers -->
+                    <div class="map-point" style="top: 45%; left: 30%;"></div>
+                    <div class="map-label" style="top: 45%; left: 30%;">Chicago: 18 centers</div>
+                    
+                    <div class="map-point" style="top: 40%; left: 50%;"></div>
+                    <div class="map-label" style="top: 40%; left: 50%;">Detroit: 8 centers</div>
+                    
+                    <div class="map-point" style="top: 35%; left: 65%;"></div>
+                    <div class="map-label" style="top: 35%; left: 65%;">Toronto: 12 centers</div>
+                    
+                    <!-- Planned centers -->
+                    <div class="map-point planned" style="top: 42%; left: 35%;"></div>
+                    <div class="map-label" style="top: 42%; left: 35%;">Milwaukee: 3 planned</div>
+                    
+                    <div class="map-point planned" style="top: 38%; left: 55%;"></div>
+                    <div class="map-label" style="top: 38%; left: 55%;">Cleveland: 5 planned</div>
+                </div>
+                <p class="source" style="margin-top: 20px;">Source: Data Center Map, 2024</p>
             </div>
         </div>
         
         <section class="story-section">
-            <h2>The Data Reveals</h2>
-            <p>As readers scroll past the visualization, you can explain what they just saw. The viz stays sticky as they read, allowing them to reference it.</p>
+            <h2>What's Really Happening</h2>
+            <p>Microsoft's $3.3 billion Wisconsin facility. Google's $2 billion expansion in Michigan. Amazon's quiet acquisition of 400 acres along Lake Erie. These aren't isolated investments—they're part of a coordinated transformation.</p>
+            
+            <span class="big-number">38</span>
+            <p>Major data centers currently operating in the Great Lakes watershed</p>
+            
+            <span class="big-number">47</span>
+            <p>Additional facilities in planning or construction phases</p>
         </section>
         
         <section class="story-section">
-            <h2>Deeper Analysis</h2>
-            <p>Continue building your narrative. Each section appears as the reader scrolls down, creating a natural reading rhythm.</p>
+            <div class="pullquote">
+                "Every ChatGPT query, every Netflix stream, every Zoom call—they all need servers, and those servers need cooling. The Great Lakes are sitting on the world's largest cooling system."
+            </div>
+        </section>
+        
+        <!-- Jobs Impact Visualization -->
+        <div class="viz-container">
+            <div class="viz-content">
+                <h3>Employment Impact by 2027</h3>
+                <div class="bar-chart" id="jobs-chart">
+                    <div class="bar" style="height: 60%;" data-value="12,000">
+                        <span class="bar-value">12,000</span>
+                        <span class="bar-label">Direct Jobs</span>
+                    </div>
+                    <div class="bar" style="height: 80%;" data-value="28,000">
+                        <span class="bar-value">28,000</span>
+                        <span class="bar-label">Construction</span>
+                    </div>
+                    <div class="bar" style="height: 100%;" data-value="45,000">
+                        <span class="bar-value">45,000</span>
+                        <span class="bar-label">Indirect/Support</span>
+                    </div>
+                </div>
+                <p class="source">Projections based on industry multipliers and announced projects</p>
+            </div>
+        </div>
+        
+        <section class="story-section">
+            <h2>The Economic Promise</h2>
+            <p>Each data center represents more than just jobs. The average facility brings:</p>
+            
+            <div class="impact-grid">
+                <div class="impact-item">
+                    <span class="impact-number">$243M</span>
+                    <span class="impact-label">Average construction investment</span>
+                </div>
+                <div class="impact-item">
+                    <span class="impact-number">$32M</span>
+                    <span class="impact-label">Annual tax revenue</span>
+                </div>
+                <div class="impact-item">
+                    <span class="impact-number">150-200</span>
+                    <span class="impact-label">Permanent positions</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Environmental Impact Visualization -->
+        <div class="viz-container">
+            <div class="viz-content">
+                <h3>Water Usage Scenarios: 85 Data Centers by 2027</h3>
+                <div class="scenario-toggle">
+                    <button class="scenario-btn active" onclick="showScenario('conservative')">Conservative Estimate</button>
+                    <button class="scenario-btn" onclick="showScenario('worst')">Worst Case</button>
+                </div>
+                
+                <div id="conservative-scenario">
+                    <div class="impact-grid">
+                        <div class="impact-item visible">
+                            <span class="impact-number">15B</span>
+                            <span class="impact-label">Gallons per year</span>
+                        </div>
+                        <div class="impact-item visible">
+                            <span class="impact-number">0.03%</span>
+                            <span class="impact-label">Of Lake Michigan volume</span>
+                        </div>
+                        <div class="impact-item visible">
+                            <span class="impact-number">82°F</span>
+                            <span class="impact-label">Average discharge temp</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="worst-scenario" style="display: none;">
+                    <div class="impact-grid">
+                        <div class="impact-item visible">
+                            <span class="impact-number">52B</span>
+                            <span class="impact-label">Gallons per year</span>
+                        </div>
+                        <div class="impact-item visible">
+                            <span class="impact-number">0.1%</span>
+                            <span class="impact-label">Of Lake Michigan volume</span>
+                        </div>
+                        <div class="impact-item visible">
+                            <span class="impact-number">95°F</span>
+                            <span class="impact-label">Peak discharge temp</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 30px; line-height: 1.6;">
+                    <span id="scenario-description">
+                        Conservative: Assumes modern cooling efficiency, closed-loop systems, and winter free-cooling for 5 months.
+                    </span>
+                </p>
+            </div>
+        </div>
+        
+        <section class="story-section">
+            <h2>The Environmental Equation</h2>
+            <p>The numbers seem staggering—billions of gallons of water. But context matters. The conservative estimate of 15 billion gallons represents what Chicago's residents use in just 40 days.</p>
+            <p>The real concern isn't quantity—it's temperature. Water discharged at 95°F can create thermal plumes that affect fish spawning grounds and alter local ecosystems. Three facilities have already been cited for violations.</p>
+        </section>
+        
+        <section class="story-section">
+            <h2>What Comes Next</h2>
+            <p>Michigan just passed legislation requiring environmental impact studies for facilities using over 5 million gallons annually. Wisconsin is considering similar measures. Ontario has implemented the strictest rules yet: mandatory closed-loop cooling for any facility within 10 miles of the lakes.</p>
+            <p>The data center boom isn't slowing—if anything, AI's hunger for computing power is accelerating it. The question isn't whether the Great Lakes region will become America's data hub. It's whether we'll manage that transformation wisely.</p>
+            
+            <div style="margin-top: 60px; padding-top: 40px; border-top: 1px solid rgba(212, 196, 160, 0.3);">
+                <p class="source">Data sources: Data Center Map 2024, Great Lakes Commission, EPA Water Use Database, Industry reports from CBRE and JLL</p>
+            </div>
         </section>
     </div>
     
     <script>
-        // Simple scroll-triggered animations
+        // Intersection Observer for scroll animations
         const observerOptions = {
             threshold: 0.2,
             rootMargin: '0px 0px -100px 0px'
@@ -172,13 +476,60 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                    
+                    // Animate bars when visible
+                    if (entry.target.querySelector('.bar')) {
+                        const bars = entry.target.querySelectorAll('.bar');
+                        bars.forEach((bar, index) => {
+                            setTimeout(() => {
+                                bar.classList.add('animate');
+                            }, index * 200);
+                        });
+                    }
+                    
+                    // Animate impact items
+                    if (entry.target.querySelector('.impact-item')) {
+                        const items = entry.target.querySelectorAll('.impact-item');
+                        items.forEach((item, index) => {
+                            setTimeout(() => {
+                                item.classList.add('visible');
+                            }, index * 150);
+                        });
+                    }
                 }
             });
         }, observerOptions);
         
+        // Observe all sections
         document.querySelectorAll('.story-section').forEach(section => {
             observer.observe(section);
         });
+        
+        // Observe visualizations
+        document.querySelectorAll('.viz-content').forEach(viz => {
+            observer.observe(viz);
+        });
+        
+        // Scenario toggle function
+        function showScenario(type) {
+            const buttons = document.querySelectorAll('.scenario-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const conservative = document.getElementById('conservative-scenario');
+            const worst = document.getElementById('worst-scenario');
+            const description = document.getElementById('scenario-description');
+            
+            if (type === 'conservative') {
+                conservative.style.display = 'block';
+                worst.style.display = 'none';
+                description.textContent = 'Conservative: Assumes modern cooling efficiency, closed-loop systems, and winter free-cooling for 5 months.';
+            } else {
+                conservative.style.display = 'none';
+                worst.style.display = 'block';
+                description.textContent = 'Worst Case: Older cooling technology, open-loop systems, peak summer demand, and minimal efficiency measures.';
+            }
+        }
     </script>
 </body>
 </html>
