@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Data Center Boom - Fresh Coast</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Crimson+Text:wght@400;600&display=swap');
         
@@ -15,12 +18,90 @@
         
         body {
             font-family: 'Crimson Text', Georgia, serif;
-            line-height: 1.8;
             background-color: #4A5D4E;
+            color: #D4C4A0;
+            overflow-x: hidden;
+        }
+        
+        /* Scrollytelling Layout */
+        .scroll-container {
+            position: relative;
+        }
+        
+        /* Text sections that scroll */
+        .narrative-container {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .narrative-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 60px 20px;
+        }
+        
+        .narrative-content {
+            max-width: 500px;
+            margin-left: 10%;
+            background: rgba(74, 93, 78, 0.95);
+            padding: 40px;
+            border-radius: 4px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .narrative-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .narrative-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #E5D5B0;
+            line-height: 1.2;
+        }
+        
+        .narrative-content p {
+            font-size: 1.15em;
+            line-height: 1.8;
+            margin-bottom: 1.2em;
             color: #D4C4A0;
         }
         
-        /* Header */
+        /* Sticky visualization panel */
+        .viz-panel {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 45%;
+            margin-left: auto;
+            margin-right: 5%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .viz-panel.fixed {
+            position: fixed;
+            right: 0;
+            top: 0;
+        }
+        
+        .viz-content {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            pointer-events: auto;
+        }
+        
+        /* Header styles */
         .story-header {
             height: 100vh;
             display: flex;
@@ -28,30 +109,43 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             position: relative;
         }
         
         .story-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5em, 6vw, 4.5em);
-            font-weight: 700;
-            margin-bottom: 20px;
+            font-size: clamp(3em, 7vw, 5em);
+            margin-bottom: 30px;
             letter-spacing: -0.02em;
+            opacity: 0;
+            animation: fadeInUp 1s forwards;
         }
         
         .story-header .subtitle {
-            font-size: 1.3em;
-            opacity: 0.8;
+            font-size: 1.4em;
             max-width: 700px;
             line-height: 1.6;
+            opacity: 0;
+            animation: fadeInUp 1s 0.3s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
         }
         
         .scroll-indicator {
             position: absolute;
             bottom: 40px;
-            opacity: 0.6;
-            animation: bounce 2s infinite;
+            opacity: 0;
+            animation: fadeInUp 1s 0.6s forwards, bounce 2s 1.6s infinite;
         }
         
         @keyframes bounce {
@@ -59,79 +153,86 @@
             50% { transform: translateY(-10px); }
         }
         
-        /* Story content */
-        .story-content {
-            max-width: 650px;
-            margin: 0 auto;
-            padding: 100px 20px;
-        }
-        
-        .story-section {
-            margin-bottom: 80vh;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s, transform 0.8s;
-        }
-        
-        .story-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .story-section h2 {
+        /* Data viz styles */
+        .big-stat {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2em;
-            margin-bottom: 30px;
-            color: #D4C4A0;
-        }
-        
-        .story-section p {
-            font-size: 1.2em;
-            margin-bottom: 1.5em;
-        }
-        
-        .big-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 4em;
+            font-size: 5em;
             color: #E5D5B0;
-            display: block;
-            margin: 40px 0 20px 0;
+            text-align: center;
+            margin: 20px 0;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .source {
-            font-size: 0.9em;
-            opacity: 0.6;
-            font-style: italic;
+        .big-stat.visible {
+            opacity: 1;
+            transform: scale(1);
         }
         
-        /* Data visualizations */
-        .viz-container {
-            position: sticky;
-            top: 10vh;
-            height: 80vh;
-            margin: 100px auto;
-            max-width: 900px;
-            padding: 20px;
+        .stat-label {
+            text-align: center;
+            font-size: 1.2em;
+            opacity: 0.8;
         }
         
-        .viz-content {
+        /* Chart styles */
+        .bar-chart {
+            margin: 40px 0;
+        }
+        
+        .bar-group {
+            margin-bottom: 25px;
+        }
+        
+        .bar-label {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #E5D5B0;
+        }
+        
+        .bar-track {
             width: 100%;
-            height: 100%;
-            background: rgba(30, 50, 35, 0.3);
-            border: 1px solid rgba(212, 196, 160, 0.2);
+            height: 40px;
+            background: rgba(212, 196, 160, 0.1);
             border-radius: 4px;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        /* Map styles */
-        #map-viz {
+            overflow: hidden;
             position: relative;
         }
         
-        .map-point {
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E5D5B0, rgba(229, 213, 176, 0.6));
+            border-radius: 4px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+        }
+        
+        .bar-fill.animate {
+            width: var(--width);
+        }
+        
+        .bar-value {
+            color: #4A5D4E;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        /* Map dots */
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(212, 196, 160, 0.05);
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+        
+        .map-dot {
             position: absolute;
             width: 12px;
             height: 12px;
@@ -139,94 +240,58 @@
             border-radius: 50%;
             transform: translate(-50%, -50%);
             cursor: pointer;
-            transition: all 0.3s;
+            opacity: 0;
+            animation: popIn 0.5s forwards;
+            animation-delay: var(--delay);
         }
         
-        .map-point.planned {
+        .map-dot.planned {
             background: transparent;
             border: 2px solid #E5D5B0;
         }
         
-        .map-point:hover {
-            transform: translate(-50%, -50%) scale(1.5);
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
         }
         
-        .map-label {
+        .map-tooltip {
             position: absolute;
+            background: rgba(74, 93, 78, 0.95);
+            padding: 8px 12px;
+            border-radius: 4px;
             font-size: 0.9em;
-            white-space: nowrap;
-            opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s;
-            background: rgba(74, 93, 78, 0.9);
-            padding: 4px 8px;
-            border-radius: 3px;
-        }
-        
-        .map-point:hover + .map-label {
-            opacity: 1;
-        }
-        
-        /* Chart styles */
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            height: 300px;
-            margin: 40px 0;
-        }
-        
-        .bar {
-            flex: 1;
-            background: linear-gradient(to top, #E5D5B0, rgba(229, 213, 176, 0.4));
-            margin: 0 10px;
-            position: relative;
-            transition: all 0.6s;
             opacity: 0;
-            transform: scaleY(0);
-            transform-origin: bottom;
-        }
-        
-        .bar.animate {
-            opacity: 1;
-            transform: scaleY(1);
-        }
-        
-        .bar-label {
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.9em;
+            transition: opacity 0.3s;
             white-space: nowrap;
-        }
-        
-        .bar-value {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-weight: 600;
-            font-size: 1.1em;
+            z-index: 100;
         }
         
         /* Scenario toggle */
         .scenario-toggle {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            gap: 10px;
             margin: 30px 0;
+            justify-content: center;
         }
         
         .scenario-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: transparent;
             border: 1px solid #D4C4A0;
             color: #D4C4A0;
-            cursor: pointer;
-            transition: all 0.3s;
             font-family: inherit;
             font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px;
         }
         
         .scenario-btn.active {
@@ -234,22 +299,25 @@
             color: #4A5D4E;
         }
         
-        /* Impact metrics */
+        /* Impact grid */
         .impact-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 30px;
-            margin: 40px 0;
+            margin: 30px 0;
         }
         
-        .impact-item {
+        .impact-card {
+            background: rgba(212, 196, 160, 0.08);
+            padding: 25px;
+            border-radius: 8px;
             text-align: center;
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.6s;
         }
         
-        .impact-item.visible {
+        .impact-card.visible {
             opacity: 1;
             transform: translateY(0);
         }
@@ -259,277 +327,337 @@
             font-size: 2.5em;
             color: #E5D5B0;
             display: block;
+            margin-bottom: 10px;
         }
         
-        .impact-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 10px;
-        }
-        
-        /* Back link */
+        /* Back button */
         .back-home {
             position: fixed;
             top: 30px;
             left: 30px;
             color: #D4C4A0;
             text-decoration: none;
-            opacity: 0.7;
-            transition: opacity 0.2s;
             z-index: 100;
+            background: rgba(74, 93, 78, 0.9);
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
         }
         
         .back-home:hover {
-            opacity: 1;
+            background: rgba(74, 93, 78, 1);
+            transform: translateX(-5px);
         }
         
-        /* Pullquote */
-        .pullquote {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8em;
-            line-height: 1.4;
-            margin: 60px 0;
-            padding: 30px 0;
-            border-top: 1px solid rgba(212, 196, 160, 0.3);
-            border-bottom: 1px solid rgba(212, 196, 160, 0.3);
-            color: #E5D5B0;
+        /* Mobile responsive */
+        @media (max-width: 968px) {
+            .narrative-content {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 90%;
+            }
+            
+            .viz-panel {
+                position: relative;
+                width: 100%;
+                margin: 0;
+                height: auto;
+                padding: 40px 20px;
+            }
+            
+            .narrative-section {
+                min-height: auto;
+                padding: 40px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="/" class="back-home">← Fresh Coast</a>
+    <div id="root"></div>
     
-    <header class="story-header">
-        <h1>The Quiet Revolution</h1>
-        <p class="subtitle">How the Great Lakes region became America's unexpected data center hub—and what 50 billion gallons of water have to do with it</p>
-        <div class="scroll-indicator">↓</div>
-    </header>
-    
-    <div class="story-content">
-        <section class="story-section">
-            <h2>The New Gold Rush</h2>
-            <p>In 2019, the Great Lakes region hosted 12 major data centers. Today, that number has tripled. By 2027, it could reach 100.</p>
-            <p>The reason is simple: data centers need three things in abundance—power, land, and water. The Great Lakes region has all three, plus something else: a climate that provides free cooling for half the year.</p>
-        </section>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
         
-        <!-- Map Visualization -->
-        <div class="viz-container">
-            <div class="viz-content" id="map-viz">
-                <h3 style="margin-bottom: 30px;">Data Centers: Built & Planned</h3>
-                <div style="position: relative; height: 400px; background: rgba(212, 196, 160, 0.05); border-radius: 4px;">
-                    <!-- Existing centers -->
-                    <div class="map-point" style="top: 45%; left: 30%;"></div>
-                    <div class="map-label" style="top: 45%; left: 30%;">Chicago: 18 centers</div>
-                    
-                    <div class="map-point" style="top: 40%; left: 50%;"></div>
-                    <div class="map-label" style="top: 40%; left: 50%;">Detroit: 8 centers</div>
-                    
-                    <div class="map-point" style="top: 35%; left: 65%;"></div>
-                    <div class="map-label" style="top: 35%; left: 65%;">Toronto: 12 centers</div>
-                    
-                    <!-- Planned centers -->
-                    <div class="map-point planned" style="top: 42%; left: 35%;"></div>
-                    <div class="map-label" style="top: 42%; left: 35%;">Milwaukee: 3 planned</div>
-                    
-                    <div class="map-point planned" style="top: 38%; left: 55%;"></div>
-                    <div class="map-label" style="top: 38%; left: 55%;">Cleveland: 5 planned</div>
-                </div>
-                <p class="source" style="margin-top: 20px;">Source: Data Center Map, 2024</p>
-            </div>
-        </div>
-        
-        <section class="story-section">
-            <h2>What's Really Happening</h2>
-            <p>Microsoft's $3.3 billion Wisconsin facility. Google's $2 billion expansion in Michigan. Amazon's quiet acquisition of 400 acres along Lake Erie. These aren't isolated investments—they're part of a coordinated transformation.</p>
+        // Intersection Observer Hook
+        function useIntersection(ref, options = {}) {
+            const [isVisible, setIsVisible] = useState(false);
             
-            <span class="big-number">38</span>
-            <p>Major data centers currently operating in the Great Lakes watershed</p>
-            
-            <span class="big-number">47</span>
-            <p>Additional facilities in planning or construction phases</p>
-        </section>
-        
-        <section class="story-section">
-            <div class="pullquote">
-                "Every ChatGPT query, every Netflix stream, every Zoom call—they all need servers, and those servers need cooling. The Great Lakes are sitting on the world's largest cooling system."
-            </div>
-        </section>
-        
-        <!-- Jobs Impact Visualization -->
-        <div class="viz-container">
-            <div class="viz-content">
-                <h3>Employment Impact by 2027</h3>
-                <div class="bar-chart" id="jobs-chart">
-                    <div class="bar" style="height: 60%;" data-value="12,000">
-                        <span class="bar-value">12,000</span>
-                        <span class="bar-label">Direct Jobs</span>
-                    </div>
-                    <div class="bar" style="height: 80%;" data-value="28,000">
-                        <span class="bar-value">28,000</span>
-                        <span class="bar-label">Construction</span>
-                    </div>
-                    <div class="bar" style="height: 100%;" data-value="45,000">
-                        <span class="bar-value">45,000</span>
-                        <span class="bar-label">Indirect/Support</span>
-                    </div>
-                </div>
-                <p class="source">Projections based on industry multipliers and announced projects</p>
-            </div>
-        </div>
-        
-        <section class="story-section">
-            <h2>The Economic Promise</h2>
-            <p>Each data center represents more than just jobs. The average facility brings:</p>
-            
-            <div class="impact-grid">
-                <div class="impact-item">
-                    <span class="impact-number">$243M</span>
-                    <span class="impact-label">Average construction investment</span>
-                </div>
-                <div class="impact-item">
-                    <span class="impact-number">$32M</span>
-                    <span class="impact-label">Annual tax revenue</span>
-                </div>
-                <div class="impact-item">
-                    <span class="impact-number">150-200</span>
-                    <span class="impact-label">Permanent positions</span>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Environmental Impact Visualization -->
-        <div class="viz-container">
-            <div class="viz-content">
-                <h3>Water Usage Scenarios: 85 Data Centers by 2027</h3>
-                <div class="scenario-toggle">
-                    <button class="scenario-btn active" onclick="showScenario('conservative')">Conservative Estimate</button>
-                    <button class="scenario-btn" onclick="showScenario('worst')">Worst Case</button>
-                </div>
+            useEffect(() => {
+                const element = ref.current;
+                if (!element) return;
                 
-                <div id="conservative-scenario">
-                    <div class="impact-grid">
-                        <div class="impact-item visible">
-                            <span class="impact-number">15B</span>
-                            <span class="impact-label">Gallons per year</span>
-                        </div>
-                        <div class="impact-item visible">
-                            <span class="impact-number">0.03%</span>
-                            <span class="impact-label">Of Lake Michigan volume</span>
-                        </div>
-                        <div class="impact-item visible">
-                            <span class="impact-number">82°F</span>
-                            <span class="impact-label">Average discharge temp</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="worst-scenario" style="display: none;">
-                    <div class="impact-grid">
-                        <div class="impact-item visible">
-                            <span class="impact-number">52B</span>
-                            <span class="impact-label">Gallons per year</span>
-                        </div>
-                        <div class="impact-item visible">
-                            <span class="impact-number">0.1%</span>
-                            <span class="impact-label">Of Lake Michigan volume</span>
-                        </div>
-                        <div class="impact-item visible">
-                            <span class="impact-number">95°F</span>
-                            <span class="impact-label">Peak discharge temp</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <p style="margin-top: 30px; line-height: 1.6;">
-                    <span id="scenario-description">
-                        Conservative: Assumes modern cooling efficiency, closed-loop systems, and winter free-cooling for 5 months.
-                    </span>
-                </p>
-            </div>
-        </div>
-        
-        <section class="story-section">
-            <h2>The Environmental Equation</h2>
-            <p>The numbers seem staggering—billions of gallons of water. But context matters. The conservative estimate of 15 billion gallons represents what Chicago's residents use in just 40 days.</p>
-            <p>The real concern isn't quantity—it's temperature. Water discharged at 95°F can create thermal plumes that affect fish spawning grounds and alter local ecosystems. Three facilities have already been cited for violations.</p>
-        </section>
-        
-        <section class="story-section">
-            <h2>What Comes Next</h2>
-            <p>Michigan just passed legislation requiring environmental impact studies for facilities using over 5 million gallons annually. Wisconsin is considering similar measures. Ontario has implemented the strictest rules yet: mandatory closed-loop cooling for any facility within 10 miles of the lakes.</p>
-            <p>The data center boom isn't slowing—if anything, AI's hunger for computing power is accelerating it. The question isn't whether the Great Lakes region will become America's data hub. It's whether we'll manage that transformation wisely.</p>
-            
-            <div style="margin-top: 60px; padding-top: 40px; border-top: 1px solid rgba(212, 196, 160, 0.3);">
-                <p class="source">Data sources: Data Center Map 2024, Great Lakes Commission, EPA Water Use Database, Industry reports from CBRE and JLL</p>
-            </div>
-        </section>
-    </div>
-    
-    <script>
-        // Intersection Observer for scroll animations
-        const observerOptions = {
-            threshold: 0.2,
-            rootMargin: '0px 0px -100px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    
-                    // Animate bars when visible
-                    if (entry.target.querySelector('.bar')) {
-                        const bars = entry.target.querySelectorAll('.bar');
-                        bars.forEach((bar, index) => {
-                            setTimeout(() => {
-                                bar.classList.add('animate');
-                            }, index * 200);
-                        });
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
                     }
-                    
-                    // Animate impact items
-                    if (entry.target.querySelector('.impact-item')) {
-                        const items = entry.target.querySelectorAll('.impact-item');
-                        items.forEach((item, index) => {
-                            setTimeout(() => {
-                                item.classList.add('visible');
-                            }, index * 150);
-                        });
-                    }
-                }
-            });
-        }, observerOptions);
-        
-        // Observe all sections
-        document.querySelectorAll('.story-section').forEach(section => {
-            observer.observe(section);
-        });
-        
-        // Observe visualizations
-        document.querySelectorAll('.viz-content').forEach(viz => {
-            observer.observe(viz);
-        });
-        
-        // Scenario toggle function
-        function showScenario(type) {
-            const buttons = document.querySelectorAll('.scenario-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+                }, {
+                    threshold: 0.3,
+                    rootMargin: '0px 0px -100px 0px',
+                    ...options
+                });
+                
+                observer.observe(element);
+                return () => observer.unobserve(element);
+            }, [ref]);
             
-            const conservative = document.getElementById('conservative-scenario');
-            const worst = document.getElementById('worst-scenario');
-            const description = document.getElementById('scenario-description');
-            
-            if (type === 'conservative') {
-                conservative.style.display = 'block';
-                worst.style.display = 'none';
-                description.textContent = 'Conservative: Assumes modern cooling efficiency, closed-loop systems, and winter free-cooling for 5 months.';
-            } else {
-                conservative.style.display = 'none';
-                worst.style.display = 'block';
-                description.textContent = 'Worst Case: Older cooling technology, open-loop systems, peak summer demand, and minimal efficiency measures.';
-            }
+            return isVisible;
         }
+        
+        // Animated Bar Chart Component
+        function BarChart({ data, visible }) {
+            return (
+                <div className="bar-chart">
+                    {data.map((item, index) => (
+                        <div key={index} className="bar-group">
+                            <div className="bar-label">{item.label}</div>
+                            <div className="bar-track">
+                                <div 
+                                    className={`bar-fill ${visible ? 'animate' : ''}`}
+                                    style={{'--width': item.percentage}}
+                                >
+                                    <span className="bar-value">{item.value}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+        
+        // Map Component
+        function DataCenterMap({ visible }) {
+            const [hoveredDot, setHoveredDot] = useState(null);
+            
+            const centers = [
+                { id: 1, x: 30, y: 45, label: 'Chicago: 18 centers', planned: false },
+                { id: 2, x: 50, y: 40, label: 'Detroit: 8 centers', planned: false },
+                { id: 3, x: 65, y: 35, label: 'Toronto: 12 centers', planned: false },
+                { id: 4, x: 35, y: 42, label: 'Milwaukee: 3 planned', planned: true },
+                { id: 5, x: 55, y: 38, label: 'Cleveland: 5 planned', planned: true },
+            ];
+            
+            return (
+                <div className="map-container">
+                    {centers.map((center, index) => (
+                        <React.Fragment key={center.id}>
+                            <div
+                                className={`map-dot ${center.planned ? 'planned' : ''}`}
+                                style={{
+                                    left: `${center.x}%`,
+                                    top: `${center.y}%`,
+                                    '--delay': `${index * 0.1}s`
+                                }}
+                                onMouseEnter={() => setHoveredDot(center.id)}
+                                onMouseLeave={() => setHoveredDot(null)}
+                            />
+                            <div
+                                className="map-tooltip"
+                                style={{
+                                    left: `${center.x}%`,
+                                    top: `${center.y - 8}%`,
+                                    opacity: hoveredDot === center.id ? 1 : 0,
+                                    transform: 'translate(-50%, 0)'
+                                }}
+                            >
+                                {center.label}
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </div>
+            );
+        }
+        
+        // Environmental Impact Component
+        function EnvironmentalImpact({ visible }) {
+            const [scenario, setScenario] = useState('conservative');
+            
+            const scenarios = {
+                conservative: {
+                    water: '15B',
+                    percentage: '0.03%',
+                    temp: '82°F',
+                    description: 'Assumes modern cooling efficiency and winter free-cooling'
+                },
+                worst: {
+                    water: '52B',
+                    percentage: '0.1%',
+                    temp: '95°F',
+                    description: 'Older technology with minimal efficiency measures'
+                }
+            };
+            
+            const current = scenarios[scenario];
+            
+            return (
+                <div>
+                    <div className="scenario-toggle">
+                        <button 
+                            className={`scenario-btn ${scenario === 'conservative' ? 'active' : ''}`}
+                            onClick={() => setScenario('conservative')}
+                        >
+                            Conservative
+                        </button>
+                        <button 
+                            className={`scenario-btn ${scenario === 'worst' ? 'active' : ''}`}
+                            onClick={() => setScenario('worst')}
+                        >
+                            Worst Case
+                        </button>
+                    </div>
+                    
+                    <div className="impact-grid">
+                        <div className={`impact-card ${visible ? 'visible' : ''}`}>
+                            <span className="impact-number">{current.water}</span>
+                            <span>Gallons per year</span>
+                        </div>
+                        <div className={`impact-card ${visible ? 'visible' : ''}`} style={{transitionDelay: '0.1s'}}>
+                            <span className="impact-number">{current.percentage}</span>
+                            <span>Of Lake Michigan</span>
+                        </div>
+                        <div className={`impact-card ${visible ? 'visible' : ''}`} style={{transitionDelay: '0.2s'}}>
+                            <span className="impact-number">{current.temp}</span>
+                            <span>Discharge temp</span>
+                        </div>
+                    </div>
+                    
+                    <p style={{textAlign: 'center', fontSize: '0.95em', opacity: 0.8, marginTop: '20px'}}>
+                        {current.description}
+                    </p>
+                </div>
+            );
+        }
+        
+        // Main Story Component
+        function DataCenterStory() {
+            const [currentSection, setCurrentSection] = useState(0);
+            
+            // Refs for scroll detection
+            const section1Ref = useRef(null);
+            const section2Ref = useRef(null);
+            const section3Ref = useRef(null);
+            const section4Ref = useRef(null);
+            const section5Ref = useRef(null);
+            
+            // Track visibility
+            const section1Visible = useIntersection(section1Ref);
+            const section2Visible = useIntersection(section2Ref);
+            const section3Visible = useIntersection(section3Ref);
+            const section4Visible = useIntersection(section4Ref);
+            const section5Visible = useIntersection(section5Ref);
+            
+            // Update current section based on scroll
+            useEffect(() => {
+                if (section5Visible) setCurrentSection(5);
+                else if (section4Visible) setCurrentSection(4);
+                else if (section3Visible) setCurrentSection(3);
+                else if (section2Visible) setCurrentSection(2);
+                else if (section1Visible) setCurrentSection(1);
+                else setCurrentSection(0);
+            }, [section1Visible, section2Visible, section3Visible, section4Visible, section5Visible]);
+            
+            const jobsData = [
+                { label: 'Direct Jobs', value: '12,000', percentage: '60%' },
+                { label: 'Construction', value: '28,000', percentage: '80%' },
+                { label: 'Support Services', value: '45,000', percentage: '100%' }
+            ];
+            
+            return (
+                <>
+                    <a href="/" className="back-home">← Fresh Coast</a>
+                    
+                    <header className="story-header">
+                        <h1>The Quiet Revolution</h1>
+                        <p className="subtitle">
+                            How the Great Lakes region became America's unexpected data center hub—and what 50 billion gallons of water have to do with it
+                        </p>
+                        <div className="scroll-indicator">↓</div>
+                    </header>
+                    
+                    <div className="scroll-container">
+                        {/* Section 1 - Introduction */}
+                        <div className="narrative-section">
+                            <div ref={section1Ref} className={`narrative-content ${section1Visible ? 'visible' : ''}`}>
+                                <h2>The New Gold Rush</h2>
+                                <p>In 2019, the Great Lakes region hosted 12 major data centers. Today, that number has tripled. By 2027, it could reach 100.</p>
+                                <p>The reason is simple: data centers need three things in abundance—power, land, and water. The Great Lakes region has all three.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Sticky Viz Panel */}
+                        {currentSection > 0 && currentSection <= 5 && (
+                            <div className="viz-panel fixed">
+                                <div className="viz-content">
+                                    {currentSection === 1 && (
+                                        <div>
+                                            <div className={`big-stat ${section1Visible ? 'visible' : ''}`}>38</div>
+                                            <div className="stat-label">Data centers currently operating</div>
+                                        </div>
+                                    )}
+                                    
+                                    {currentSection === 2 && (
+                                        <DataCenterMap visible={section2Visible} />
+                                    )}
+                                    
+                                    {currentSection === 3 && (
+                                        <BarChart data={jobsData} visible={section3Visible} />
+                                    )}
+                                    
+                                    {currentSection === 4 && (
+                                        <EnvironmentalImpact visible={section4Visible} />
+                                    )}
+                                    
+                                    {currentSection === 5 && (
+                                        <div>
+                                            <div className={`big-stat ${section5Visible ? 'visible' : ''}`}>2027</div>
+                                            <div className="stat-label">The year this region becomes America's data hub</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Section 2 - Map */}
+                        <div className="narrative-section">
+                            <div ref={section2Ref} className={`narrative-content ${section2Visible ? 'visible' : ''}`}>
+                                <h2>The Geography of Growth</h2>
+                                <p>Microsoft's $3.3 billion Wisconsin facility. Google's expansion in Michigan. Amazon's quiet acquisition along Lake Erie.</p>
+                                <p>These aren't isolated investments—they're part of a coordinated transformation centered on the world's largest freshwater system.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Section 3 - Jobs */}
+                        <div className="narrative-section">
+                            <div ref={section3Ref} className={`narrative-content ${section3Visible ? 'visible' : ''}`}>
+                                <h2>The Economic Promise</h2>
+                                <p>Each facility brings an average $243 million construction investment and 150-200 permanent positions.</p>
+                                <p>But the ripple effects go deeper—from construction crews to security teams, HVAC specialists to network engineers.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Section 4 - Environmental */}
+                        <div className="narrative-section">
+                            <div ref={section4Ref} className={`narrative-content ${section4Visible ? 'visible' : ''}`}>
+                                <h2>The Water Question</h2>
+                                <p>Every Google search, every Netflix stream needs cooling. The conservative estimate: 15 billion gallons annually by 2027.</p>
+                                <p>The worst case? 52 billion gallons—enough to supply Detroit for two years. Toggle between scenarios to see the range of impacts.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Section 5 - Conclusion */}
+                        <div className="narrative-section">
+                            <div ref={section5Ref} className={`narrative-content ${section5Visible ? 'visible' : ''}`}>
+                                <h2>What Comes Next</h2>
+                                <p>Michigan just passed legislation requiring impact studies. Wisconsin is considering similar measures. Ontario has the strictest rules yet.</p>
+                                <p>The data center boom isn't slowing. The question isn't whether the Great Lakes will become America's data hub—it's whether we'll manage that transformation wisely.</p>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+        
+        // Render the app
+        ReactDOM.render(<DataCenterStory />, document.getElementById('root'));
     </script>
 </body>
 </html>
