@@ -160,3 +160,111 @@
             top: 20vh;
             height: 60vh;
             margin: 100px auto;
+            max-width: 900px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .viz-placeholder {
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(74, 93, 78, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #4A5D4E;
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(42, 38, 37, 0.1);
+        }
+        
+        /* Back link */
+        .back-home {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            color: #4A5D4E;
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            z-index: 100;
+            font-weight: 600;
+        }
+        
+        .back-home:hover {
+            opacity: 1;
+        }
+        
+        /* Add subtle aging/staining effect to edges */
+        .story-header::after,
+        .story-content::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -10%;
+            right: -10%;
+            bottom: 0;
+            pointer-events: none;
+            background: radial-gradient(
+                ellipse at center,
+                transparent 70%,
+                rgba(74, 93, 78, 0.02) 100%
+            );
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-home">← Fresh Coast</a>
+    
+    <header class="story-header">
+        <h1>Your First Data Story</h1>
+        <p class="subtitle">This is where your compelling subtitle goes, setting up the narrative journey ahead</p>
+        <div class="scroll-indicator">↓ Scroll to begin</div>
+    </header>
+    
+    <div class="story-content">
+        <section class="story-section">
+            <h2>Setting the Scene</h2>
+            <p>This is where your story begins. As readers scroll, new sections fade in. Notice the drop cap at the beginning, giving it that classic newspaper feel.</p>
+            <p>The aged paper background with subtle texture and grain creates an authentic newspaper reading experience, while the duck green headers provide elegant contrast.</p>
+        </section>
+        
+        <div class="viz-container">
+            <div class="viz-placeholder">
+                Data Visualization Will Go Here
+            </div>
+        </div>
+        
+        <section class="story-section">
+            <h2>The Data Reveals</h2>
+            <p>As readers scroll past the visualization, you can explain what they just saw. The aged newspaper ink color makes for comfortable reading against the paper-toned background.</p>
+        </section>
+        
+        <section class="story-section">
+            <h2>Deeper Analysis</h2>
+            <p>Continue building your narrative. Each section appears as the reader scrolls down, creating a natural reading rhythm reminiscent of turning newspaper pages.</p>
+        </section>
+    </div>
+    
+    <script>
+        // Simple scroll-triggered animations
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.story-section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
