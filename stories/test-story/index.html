@@ -16,55 +16,8 @@
         body {
             font-family: 'Crimson Text', Georgia, serif;
             line-height: 1.8;
-            background-color: #D4C4A0;
-            color: #2A2625; /* Aged newspaper ink */
-            position: relative;
-            /* Subtle paper texture using CSS */
-            background-image: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(74, 93, 78, 0.03) 2px,
-                    rgba(74, 93, 78, 0.03) 4px
-                ),
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(74, 93, 78, 0.03) 2px,
-                    rgba(74, 93, 78, 0.03) 4px
-                );
-        }
-        
-        /* Grainy newspaper texture overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.4;
-            z-index: 1;
-            pointer-events: none;
-            background: 
-                repeating-linear-gradient(
-                    45deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(74, 93, 78, 0.02) 1px,
-                    rgba(74, 93, 78, 0.02) 2px
-                );
-            /* Noise effect */
-            filter: contrast(120%) brightness(100%);
-            mix-blend-mode: multiply;
-        }
-        
-        /* Ensure content is above texture */
-        body > * {
-            position: relative;
-            z-index: 2;
+            background-color: #4A5D4E;
+            color: #D4C4A0;
         }
         
         /* Header */
@@ -84,21 +37,17 @@
             font-weight: 700;
             margin-bottom: 20px;
             letter-spacing: -0.02em;
-            color: #4A5D4E; /* Duck Green for headers */
-            text-shadow: 1px 1px 2px rgba(42, 38, 37, 0.1);
         }
         
         .story-header .subtitle {
             font-size: 1.3em;
-            color: #2A2625;
+            opacity: 0.8;
             max-width: 600px;
-            opacity: 0.85;
         }
         
         .scroll-indicator {
             position: absolute;
             bottom: 40px;
-            color: #4A5D4E;
             opacity: 0.6;
             animation: bounce 2s infinite;
         }
@@ -116,7 +65,7 @@
         }
         
         .story-section {
-            margin-bottom: 100vh;
+            margin-bottom: 100vh; /* Creates scroll space */
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.6s, transform 0.6s;
@@ -131,27 +80,11 @@
             font-family: 'Playfair Display', serif;
             font-size: 2.2em;
             margin-bottom: 30px;
-            color: #4A5D4E; /* Duck Green for all headers */
-            text-shadow: 1px 1px 2px rgba(42, 38, 37, 0.08);
         }
         
         .story-section p {
             font-size: 1.2em;
             margin-bottom: 1.5em;
-            color: #2A2625;
-            text-shadow: 0.5px 0.5px 0px rgba(42, 38, 37, 0.05);
-            /* Slightly irregular letter spacing for that old print feel */
-            letter-spacing: 0.01em;
-        }
-        
-        /* Drop cap for first paragraph */
-        .story-section:first-of-type p:first-of-type::first-letter {
-            font-family: 'Playfair Display', serif;
-            font-size: 4em;
-            line-height: 0.8;
-            float: left;
-            margin: 0.1em 0.1em 0 0;
-            color: #4A5D4E;
         }
         
         /* Sticky visualization container */
@@ -169,14 +102,13 @@
         .viz-placeholder {
             width: 100%;
             height: 100%;
-            border: 2px solid rgba(74, 93, 78, 0.2);
+            border: 2px solid rgba(212, 196, 160, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2em;
-            color: #4A5D4E;
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 12px rgba(42, 38, 37, 0.1);
+            opacity: 0.6;
+            background: rgba(74, 93, 78, 0.5);
         }
         
         /* Back link */
@@ -184,33 +116,15 @@
             position: fixed;
             top: 30px;
             left: 30px;
-            color: #4A5D4E;
+            color: #D4C4A0;
             text-decoration: none;
             opacity: 0.7;
             transition: opacity 0.2s;
             z-index: 100;
-            font-weight: 600;
         }
         
         .back-home:hover {
             opacity: 1;
-        }
-        
-        /* Add subtle aging/staining effect to edges */
-        .story-header::after,
-        .story-content::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -10%;
-            right: -10%;
-            bottom: 0;
-            pointer-events: none;
-            background: radial-gradient(
-                ellipse at center,
-                transparent 70%,
-                rgba(74, 93, 78, 0.02) 100%
-            );
         }
     </style>
 </head>
@@ -226,8 +140,8 @@
     <div class="story-content">
         <section class="story-section">
             <h2>Setting the Scene</h2>
-            <p>This is where your story begins. As readers scroll, new sections fade in. Notice the drop cap at the beginning, giving it that classic newspaper feel.</p>
-            <p>The aged paper background with subtle texture and grain creates an authentic newspaper reading experience, while the duck green headers provide elegant contrast.</p>
+            <p>This is where your story begins. As readers scroll, new sections fade in. You can write multiple paragraphs here to establish context.</p>
+            <p>The design maintains the Duck Green and aged paper aesthetic from your homepage, creating a cohesive experience.</p>
         </section>
         
         <div class="viz-container">
@@ -238,12 +152,12 @@
         
         <section class="story-section">
             <h2>The Data Reveals</h2>
-            <p>As readers scroll past the visualization, you can explain what they just saw. The aged newspaper ink color makes for comfortable reading against the paper-toned background.</p>
+            <p>As readers scroll past the visualization, you can explain what they just saw. The viz stays sticky as they read, allowing them to reference it.</p>
         </section>
         
         <section class="story-section">
             <h2>Deeper Analysis</h2>
-            <p>Continue building your narrative. Each section appears as the reader scrolls down, creating a natural reading rhythm reminiscent of turning newspaper pages.</p>
+            <p>Continue building your narrative. Each section appears as the reader scrolls down, creating a natural reading rhythm.</p>
         </section>
     </div>
     
